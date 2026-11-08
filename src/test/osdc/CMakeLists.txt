@@ -41,3 +41,11 @@ add_executable(unittest_objecter_direct_reads
   )
 add_ceph_unittest(unittest_objecter_direct_reads)
 target_link_libraries(unittest_objecter_direct_reads osdc global ${BLKID_LIBRARIES})
+
+# unittest_object_cacher
+add_executable(unittest_object_cacher
+  test_object_cacher.cc
+  $<TARGET_OBJECTS:unit-main>
+  )
+add_ceph_unittest(unittest_object_cacher)
+target_link_libraries(unittest_object_cacher osdc global ${BLKID_LIBRARIES})
