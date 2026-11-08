@@ -657,6 +657,13 @@ void ObjectCacher::Object::discard(loff_t off, loff_t len,
       bh->bl.clear();
       bh->set_nocache(true);
       oc->mark_zero(bh);
+      // a zero bh is not pinned, so trim() or release() may delete it
+      // before the read reply arrives, and bh_read_finish() could then not
+      // find the waiters. restart them now; they will see the zeroed range.
+      for ([[maybe_unused]] auto& [off, ctxs] : bh->waitfor_read) {
+        waiting_for_read.splice(waiting_for_read.end(), ctxs);
+      }
+      bh->waitfor_read.clear();
       // we should mark all Rx bh to zero
       continue;
     } else {
